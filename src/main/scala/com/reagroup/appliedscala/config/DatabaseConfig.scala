@@ -12,10 +12,10 @@ case class DatabaseConfig(
 
 object DatabaseConfig {
   def apply(env: Environment): ValidatedNel[ConfigError, DatabaseConfig] = {
-    val host = env.required("DATABASE_HOST")
-    val username = env.required("DATABASE_USERNAME")
-    val password = env.required("DATABASE_PASSWORD").map(SensitiveValue.apply)
-    val databaseName = env.required("DATABASE_NAME")
+    val host = env.optional("DATABASE_HOST", "localhost")
+    val username = env.optional("DATABASE_USERNAME", "moviedb")
+    val password = env.optional("DATABASE_PASSWORD", "moviedb").map(SensitiveValue.apply)
+    val databaseName = env.optional("DATABASE_NAME", "moviedb")
     (host, username, password, databaseName).mapN(DatabaseConfig.apply)
   }
 }
