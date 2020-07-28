@@ -8,7 +8,9 @@ import org.http4s._
 import org.http4s.circe.CirceEntityCodec._
 import org.http4s.dsl.Http4sDsl
 
-class FetchEnrichedMovieController(fetchEnrichedMovie: MovieId => IO[Option[EnrichedMovie]]) extends Http4sDsl[IO] {
+class FetchEnrichedMovieController(
+    fetchEnrichedMovie: MovieId => IO[Option[EnrichedMovie]]
+) extends Http4sDsl[IO] {
 
   /**
     * 1. Convert `movieId` to a value of `MovieId` type
@@ -18,14 +20,13 @@ class FetchEnrichedMovieController(fetchEnrichedMovie: MovieId => IO[Option[Enri
     * Hint: Refer to `FetchMovieController` if you're stuck.
     */
   def fetch(movieId: Long): IO[Response[IO]] = {
-    val id: MovieId = ???
+    val id: MovieId = MovieId(movieId)
 
     fetchEnrichedMovie(id).attempt.flatMap {
-      case Left(error) => ???
-      case Right(Some(enrichedMovie)) => ???
-      case Right(None) => ???
+      case Left(error)                => ErrorHandler(error)
+      case Right(Some(enrichedMovie)) => Ok(enrichedMovie)
+      case Right(None)                => NotFound("Movie not found")
     }
-
   }
-
 }
+

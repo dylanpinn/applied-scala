@@ -25,5 +25,15 @@ object Metascore {
     *
     * `Metascore(75)`
     */
+  implicit val decoder: Decoder[Metascore] = {
+    Decoder.instance(cursor =>
+      for {
+        value <- cursor.get[Int]("Metascore")
+      } yield Metascore(value)
+    )
+  }
 
+  implicit val encoder: Encoder[Metascore] = {
+    Encoder[Int].contramap(metascore => metascore.value)
+  }
 }
