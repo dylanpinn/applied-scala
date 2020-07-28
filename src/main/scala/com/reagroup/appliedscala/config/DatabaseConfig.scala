@@ -16,6 +16,7 @@ object DatabaseConfig {
     val username = env.optional("DATABASE_USERNAME", "moviedb")
     val password = env.optional("DATABASE_PASSWORD", "moviedb").map(SensitiveValue.apply)
     val databaseName = env.optional("DATABASE_NAME", "moviedb")
+
     (host, username, password, databaseName).mapN(DatabaseConfig.apply)
   }
 }
