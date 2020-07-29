@@ -74,11 +74,18 @@ class AppRuntime(
     new FetchEnrichedMovieController(fetchEnrichedMovieService.fetch)
   }
 
+  private val saveMovieController: SaveMovieController = {
+    val saveMovieService: SaveMovieService = new SaveMovieService(
+      pgsqlRepo.saveMovie
+    )
+    new SaveMovieController(saveMovieService.save)
+  }
+
   private val appRoutes = new AppRoutes(
     fetchAllMoviesHandler = fetchAllMoviesController.fetchAll,
     fetchMovieHandler = fetchMovieController.fetch,
     fetchEnrichedMovieHandler = fetchEnrichedMovieController.fetch,
-    saveMovieHandler = _ => IO(Response[IO](status = Status.NotImplemented))
+    saveMovieHandler = saveMovieController.save
   )
 
   /*
