@@ -10,7 +10,9 @@ import org.http4s.dsl.Http4sDsl
 class AppRoutes(
     fetchAllMoviesHandler: IO[Response[IO]],
     fetchMovieHandler: Long => IO[Response[IO]],
-    saveMovieHandler: Request[IO] => IO[Response[IO]]
+    fetchEnrichedMovieHandler: Long => IO[Response[IO]],
+    saveMovieHandler: Request[IO] => IO[Response[IO]],
+    saveReviewHandler: (Long, Request[IO]) => IO[Response[IO]]
 ) extends Http4sDsl[IO] {
 
   /**
@@ -22,9 +24,18 @@ class AppRoutes(
       extends OptionalQueryParamDecoderMatcher[Boolean]("enriched")
 
   val openRoutes: HttpRoutes[IO] = HttpRoutes.of {
-    case GET -> Root / "movies"                                  => fetchAllMoviesHandler
-    case GET -> Root / "movies" / LongVar(id)                    => fetchMovieHandler(id)
-    case req @ POST -> Root / "movies"                           => saveMovieHandler(req)
-    case req @ POST -> Root / "movies" / LongVar(id) / "reviews" => ???
+    case GET -> Root / "movies" => fetchAllMoviesHandler
+    case GET -> Root / "movies" / LongVar(id) :? OptionalEnrichedMatcher(
+          optEnriched
+        ) => {
+      if (optEnriched.contains(true)) {
+        fetchEnrichedMovieHandler(id)
+      } else {
+        fetchMovieHandler(id)
+      }
+    }
+    case req @ POST -> Root / "movies" => saveMovieHandler(req)
+    case req @ POST -> Root / "movies" / LongVar(id) / "reviews" =>
+      saveReviewHandler(id, req)
   }
 }
