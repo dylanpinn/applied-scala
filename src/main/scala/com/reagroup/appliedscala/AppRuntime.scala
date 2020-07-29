@@ -81,11 +81,17 @@ class AppRuntime(
     new SaveMovieController(saveMovieService.save)
   }
 
+  private val saveReviewController: SaveReviewController = {
+    val saveReviewService: SaveReviewService = new SaveReviewService(pgsqlRepo.saveReview, pgsqlRepo.fetchMovie)
+    new SaveReviewController(saveReviewService.save)
+  }
+
   private val appRoutes = new AppRoutes(
     fetchAllMoviesHandler = fetchAllMoviesController.fetchAll,
     fetchMovieHandler = fetchMovieController.fetch,
     fetchEnrichedMovieHandler = fetchEnrichedMovieController.fetch,
-    saveMovieHandler = saveMovieController.save
+    saveMovieHandler = saveMovieController.save,
+    saveReviewHandler = saveReviewController.save
   )
 
   /*

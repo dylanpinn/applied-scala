@@ -11,7 +11,8 @@ class AppRoutes(
     fetchAllMoviesHandler: IO[Response[IO]],
     fetchMovieHandler: Long => IO[Response[IO]],
     fetchEnrichedMovieHandler: Long => IO[Response[IO]],
-    saveMovieHandler: Request[IO] => IO[Response[IO]]
+    saveMovieHandler: Request[IO] => IO[Response[IO]],
+    saveReviewHandler: (Long, Request[IO]) => IO[Response[IO]]
 ) extends Http4sDsl[IO] {
 
   /**
@@ -33,7 +34,8 @@ class AppRoutes(
         fetchMovieHandler(id)
       }
     }
-    case req @ POST -> Root / "movies"                           => saveMovieHandler(req)
-    case req @ POST -> Root / "movies" / LongVar(id) / "reviews" => ???
+    case req @ POST -> Root / "movies" => saveMovieHandler(req)
+    case req @ POST -> Root / "movies" / LongVar(id) / "reviews" =>
+      saveReviewHandler(id, req)
   }
 }
